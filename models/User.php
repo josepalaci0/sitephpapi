@@ -106,5 +106,62 @@ class User {
         }
         return false;
     }
+
+    
+
+    public function Login(){
+        $query = "SELECT password, estado FROM " . $this->table_name . " WHERE email = :email";
+        $stmt = $this->conn->prepare($query);
+    
+        // Sanitiza los datos antes de insertarlos en la base de datos para prevenir inyección de SQL
+        $this->email = htmlspecialchars(strip_tags($this->email));
+    
+        // Enlaza los parámetros
+        $stmt->bindParam(":email", $this->email);
+    
+        // Ejecuta la consulta
+        $stmt->execute();
+    
+        // Obtén el resultado como un arreglo asociativo
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+        // Verifica si se encontró un resultado
+        if ($row) {
+            // Verifica el estado del usuario
+            if ($row['estado'] === 'activo') {
+                return $row['password']; // Devuelve el hash de la contraseña
+            } else {
+                return null; // El usuario no está activo, podrías manejar esto como desees
+            }
+        } else {
+            return null; // El usuario no existe en la base de datos
+        }
+    }
+    function getIdByEmail($password, $email) {
+        $query = "SELECT id FROM " . $this->table_name . " WHERE email = :email";
+        $stmt = $this->conn->prepare($query);
+    
+        // Sanitiza los datos antes de insertarlos en la base de datos para prevenir inyección de SQL
+        $this->email = htmlspecialchars(strip_tags($this->email));
+    
+        // Enlaza los parámetros
+        $stmt->bindParam(":email", $this->email);
+    
+        // Ejecuta la consulta
+        $stmt->execute();
+    
+        // Obtén el resultado como un arreglo asociativo
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+        // Verifica si se encontró un resultado
+        if ($row) {
+            return $row['id']; // Devuelve el ID del usuario
+        } else {
+            return null; // El usuario no existe en la base de datos
+        }
+        
+    }
+    
+    
 }
 ?>

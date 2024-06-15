@@ -3,6 +3,8 @@
 require_once (BASE_PATH . '../config/database.php'); ;
 require_once(BASE_PATH ."../models/User.php");
 
+
+
 class UserController {
     private $conn;
 
@@ -93,4 +95,62 @@ class UserController {
             echo json_encode(['error' => 'Error al eliminar el usuario']);
         }
     }
+
+    public function login($data) {
+        if (isset($data['email']) && isset($data['password'])) {
+            $user = new User($this->conn);
+            $user->email = $data['email'];
+            
+            // Obtén el hash almacenado en la base de datos para el usuario dado
+            $stored_hash = $user->login(); // Suponiendo que esta función retorna el hash almacenado
+            
+            // Verificar si la contraseña ingresada coincide con el hash almacenado
+            if (password_verify($data['password'], $stored_hash)) { 
+                // Clave secreta para firmar el token (manejar esto de manera segura)
+                $key = 'your_secret_key';
+    
+                // Datos que quieres incluir en el payload del token
+                $user_id = $user->getIdByEmail( $user->password = password_hash($data['password'], PASSWORD_BCRYPT), $user->email = $data['email']); // Esto debería ser el ID del usuario que inició sesión
+                $expiration = time() + 30; 
+    
+                // Construye el payload del token
+                $payload = array(
+                    'iat' => time(), // Tiempo en que se emitió el token
+                    'exp' => $expiration, // Tiempo de expiración del token
+                    'user_id' => $user_id, // ID del usuario u otra información que desees incluir
+                );
+    
+                // Codifica el payload en formato JSON
+                $payload_base64 = base64_encode(json_encode($payload));
+    
+                // Crea el header del token
+                $header = base64_encode(json_encode(array('typ' => 'JWT', 'alg' => 'HS256')));
+    
+                // Genera la firma HMAC usando SHA256
+                $signature = hash_hmac('sha256', "$header.$payload_base64", $key, true);
+                $signature_base64 = base64_encode($signature);
+    
+                // Construye el token JWT
+                $token = "$header.$payload_base64.$signature_base64";
+    
+                // Devuelve el token en formato JSON como parte de la respuesta
+                echo json_encode(array(
+                    'message' => 'Inicio de sesión exitoso',
+                    'token' => $token
+                ));
+            } else {
+                // La contraseña es incorrecta
+                echo json_encode(array(
+                    'error' => 'Credenciales incorrectas'
+                ));
+            }
+        } else {
+            // Datos incompletos
+            echo json_encode(array(
+                'error' => 'Datos incompletos'
+            ));
+        }
+    }
+    
+    
 }
