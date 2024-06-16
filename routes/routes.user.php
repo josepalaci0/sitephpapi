@@ -18,20 +18,26 @@ if ($uri === '/users' && $method === 'GET') {
         $controller->getUsers();
     });
 } elseif (preg_match('/\/users\/(\d+)/', $uri, $matches) && $method === 'GET') {
-    $controller = new UserController();
-    $controller->getUserById($matches[1]);
+    applyMiddleware(function() use ($matches) {
+        $controller = new UserController();
+        $controller->getUserById($matches[1]);
+    });    
 } elseif ($uri === '/users' && $method === 'POST') {
     $controller = new UserController();
     $data = json_decode(file_get_contents('php://input'), true);
     $controller->addUser($data);
 } elseif (preg_match('/\/users\/(\d+)/', $uri, $matches) && $method === 'PUT') {
-    $controller = new UserController();
-    $data = json_decode(file_get_contents('php://input'), true);
-    $controller->updateUser($matches[1], $data);
+    appyMiddleware(function() use ($matches) {
+        $controller = new UserController();
+        $data = json_decode(file_get_contents('php://input'), true);
+        $controller->updateUser($matches[1], $data);
+    });
     
 } elseif (preg_match('/\/users\/(\d+)/', $uri, $matches) && $method === 'DELETE') {
-    $controller = new UserController();
-    $controller->deleteUser($matches[1]);
+    applyMiddleware(function() use ($matches) {
+        $controller = new UserController();
+        $controller->deleteUser($matches[1]);
+    });   
 } elseif ($uri === '/users/login' && $method === 'POST') {
     $controller = new UserController();
     $data = json_decode(file_get_contents('php://input'), true);

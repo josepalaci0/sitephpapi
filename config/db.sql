@@ -1,19 +1,19 @@
 -- Crear la base de datos
-CREATE DATABASE EjemploDB;
+CREATE DATABASE mydb;
 
 -- Usar la base de datos
-USE EjemploDB;
+USE mydb;
 
--- Crear una tabla
-CREATE TABLE Usuarios (
-    ID INT PRIMARY KEY AUTO_INCREMENT,
-    Nombre VARCHAR(50),
-    Apellido VARCHAR(50),
-    Email VARCHAR(100)
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    apellido VARCHAR(50) NOT NULL,
+    edad INT NOT NULL,
+    sexo ENUM('M', 'F') NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    estado ENUM('activo', 'inactivo') NOT NULL DEFAULT 'activo',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Insertar algunos registros de ejemplo
-INSERT INTO Usuarios (Nombre, Apellido, Email)
-VALUES ('Juan', 'Pérez', 'juan.perez@example.com'),
-       ('Ana', 'García', 'ana.garcia@example.com'),
-       ('Carlos', 'Rodríguez', 'carlos.rodriguez@example.com');

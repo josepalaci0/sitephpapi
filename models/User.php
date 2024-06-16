@@ -105,38 +105,43 @@ class User {
             return true;
         }
         return false;
-    }
+    }    
 
-    
-
-    public function Login(){
+    public function Login() {
+        // Construye la consulta SQL
         $query = "SELECT password, estado FROM " . $this->table_name . " WHERE email = :email";
+        
+        // Prepara la consulta
         $stmt = $this->conn->prepare($query);
     
-        // Sanitiza los datos antes de insertarlos en la base de datos para prevenir inyección de SQL
+        // Sanitiza los datos (correo electrónico)
         $this->email = htmlspecialchars(strip_tags($this->email));
-    
-        // Enlaza los parámetros
+        
+        // Enlaza el parámetro de correo electrónico
         $stmt->bindParam(":email", $this->email);
-    
+        
         // Ejecuta la consulta
         $stmt->execute();
-    
-        // Obtén el resultado como un arreglo asociativo
+        
+        // Obtiene el resultado como un arreglo asociativo
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+        
         // Verifica si se encontró un resultado
         if ($row) {
-            // Verifica el estado del usuario
+            // Verifica el estado del usuario (asegúrate de que 'activo' esté en minúsculas)
             if ($row['estado'] === 'activo') {
-                return $row['password']; // Devuelve el hash de la contraseña
+                // Devuelve el hash de la contraseña
+                return $row['password'];
             } else {
-                return null; // El usuario no está activo, podrías manejar esto como desees
+                // El usuario no está activo, podrías manejar esto como desees
+                return null;
             }
         } else {
-            return null; // El usuario no existe en la base de datos
+            // El usuario no existe en la base de datos
+            return null;
         }
     }
+    
     function getIdByEmail($password, $email) {
         $query = "SELECT id FROM " . $this->table_name . " WHERE email = :email";
         $stmt = $this->conn->prepare($query);

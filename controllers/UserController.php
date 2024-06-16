@@ -1,9 +1,6 @@
 <?php
-
 require_once (BASE_PATH . '../config/database.php'); ;
 require_once(BASE_PATH ."../models/User.php");
-
-
 
 class UserController {
     private $conn;
@@ -111,7 +108,7 @@ class UserController {
     
                 // Datos que quieres incluir en el payload del token
                 $user_id = $user->getIdByEmail( $user->password = password_hash($data['password'], PASSWORD_BCRYPT), $user->email = $data['email']); // Esto debería ser el ID del usuario que inició sesión
-                $expiration = time() + 30; 
+                $expiration = time() + 150; 
     
                 // Construye el payload del token
                 $payload = array(
@@ -150,7 +147,6 @@ class UserController {
                 'error' => 'Datos incompletos'
             ));
         }
-    }
-    
+    }    
     
 }
